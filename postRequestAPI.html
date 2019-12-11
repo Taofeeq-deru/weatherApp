@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>location</title>
+
+    <style>
+        html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+        body {
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-flow: column nowrap;
+            /* justify-content: center; */
+            align-items: center;
+            background: #eeeeee;
+            color: #555555;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+        ul {
+            list-style: none;
+            display: flex;
+            flex-flow: row wrap;
+            /*justify-content: center;*/
+            justify-content: center;
+        }
+        ul li {
+            display: flex;
+            flex-flow: column nowrap;
+            margin: 1.5em;
+            text-align: center;
+        }
+
+        i {
+          font-style: italic;
+          font-weight: bold;
+        }
+
+        #map {
+          height: 60%;
+          width: 100%;
+        }
+        
+        @media screen and (min-width: 48em) {
+          #map {
+            max-width: 48em;
+          }
+        }
+
+    </style>
+</head>
+<body>
+    <ul id="show"></ul>
+    <script>
+
+        function createNode(element) {
+            return document.createElement(element); //create the type of element you pass in the parameters
+        }
+
+        function append(parent, el) {
+          return parent.appendChild(el); //append the second parameter (element) to the first one (parent)
+        }
+
+        function id(idName) {
+            return document.getElementById(idName); //get an element by it's id
+        }
+
+        function select(query) {
+            return document.querySelector(query); //to select a query
+        }
+
+        function selectAll(queries) {
+            return document.querySelectorAll(queries); //to select all queries
+        }
+
+        function log(codes) {
+            return console.log(codes); //console log a code
+        }
+
+        const url = `https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyDDVxlDxBMFkM37SKcxczPnUUuSNr7qwp4`;
+        const urlCoord = ``;
+        const ul = id('show');
+
+        //the data we're going to send in our request
+        let pushedData = {
+            homeMobileCountryCode: 234,
+            //homeMobileNetworkCode: 0902,
+            //radioType: "lte",
+            carrier: "Celtel Nigeria Limited t.a ZAIN",
+            considerIp: "true"
+        };
+
+        //the parameters we are gonna pass to the fetch function
+        let fetchData = {
+            method: 'POST',
+            body: JSON.stringify(pushedData),
+            headers: new Headers()
+        };
+
+        fetch(url, fetchData)
+            .then((resp) => resp.json())
+            .then(data => {
+                log(data.location);
+                
+                let lat = `${data.location.lat}`;
+                let lng = `${data.location.lng}`;
+
+                let li = createNode('li');
+                let span = createNode('span');
+
+                //span.innerHTML
+
+                console.log(lat,lng);
+
+                // fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyDDVxlDxBMFkM37SKcxczPnUUuSNr7qwp4`)
+                //     .then((resp) => resp.json())
+                //     .then( newData => log(newData.results[0].formatted_address))
+                //     .catch(error => log("Address Error!!!"))
+
+                fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&APPID=2c52f44abc37225f70c03a60124e1680`)
+                    .then((resp) => resp.json())
+                    .then( newData => {
+                        log(newData.name);
+
+
+
+                        span.innerHTML = `<h1>${newData.name}</h1>`;
+
+                        append(li, span);
+                        append(ul, li);
+                    })
+                    .catch(error => log("Address Error!!!"))
+            })
+            .catch(function(error) {
+                log("Error!!!");
+            })
+
+    </script>
+</body>
+</html>
