@@ -117,7 +117,7 @@
 
             map.innerHTML = `<img src = ${mapURL}>`;
 
-            fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&APPID=2c52f44abc37225f70c03a60124e1680`)
+            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&APPID=2c52f44abc37225f70c03a60124e1680`)
               .then((resp) => resp.json())
               .then(newData => {
                 console.log(newData);
