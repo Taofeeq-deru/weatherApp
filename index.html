@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Simple Map</title>
+    <title>Weather App</title>
     <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
     <style>
@@ -39,6 +39,8 @@
             flex-flow: column nowrap;
             margin: 1.5em;
             text-align: center;
+            font-size: 1.2em;
+            text-transform: capitalize;
         }
 
         i {
@@ -49,6 +51,7 @@
         #map {
           height: 60%;
           width: 100%;
+          text-align: center;
         }
         
         @media screen and (min-width: 48em) {
@@ -60,67 +63,88 @@
     </style>
   </head>
   <body>
-    <h1>Location</h1>
+    <h1>Weather App</h1>
     <div id="map"></div>
     <ul id="location"></ul>
 
     <script>
 
-      function createNode(element) {
+        function createNode(element) {
             return document.createElement(element); //create the type of element you pass in the parameters
         }
 
-      function append(parent, el) {
+        function append(parent, el) {
           return parent.appendChild(el); //append the second parameter (element) to the first one (parent)
-      }
+        }
 
-      const ul = document.querySelector('#location');
-      const url = 'https://ipapi.co/json/';
+        function id(idName) {
+            return document.getElementById(idName); //get an element by it's id
+        }
 
-      fetch(url)
-        .then((resp) => resp.json())
-        .then(function(data){
-          //console.log(data.ip);
-          let city = `${data.city}`;
-          let lat = `${data.latitude}`;
-          let long = `${data.longitude}`;
+        function select(query) {
+            return document.querySelector(query); //to select a query
+        }
+
+        function selectAll(queries) {
+            return document.querySelectorAll(queries); //to select all queries
+        }
+
+        function log(codes) {
+            return console.log(codes); //console log a code
+        }
+
+      const ul = select('#location');
+      const map = id('map');
 
           let li = createNode('li'),
-              span = createNode('span');
+              weather = createNode('span'),
+              city = createNode('span')
 
-          span.innerHTML = `Your location is <i>${data.city}</i>`;
-
-          append(li, span);
-          append(ul, li);
-
-          let map;
-          function initMap() {
-            map = new google.maps.Map(document.getElementById('map'), {
-              center: {lat: `${data.latitude}`, lng: `${data.longitude}`},
-              zoom: 10
-            });
-            
+          function getLocation() {
+            if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+              span.innerHTML = `<h1>Geolocation is not supported by this browser</h1>`
+            }
           }
 
-          //console.log(coord.lat);
-        })
-        .catch(function(error){
-          alert('Error!!!');
-        })
-        console.log(coord);
-        const newLat = Number(coord.lat);
-        console.log(coord.lat);
-        console.log(newLat);
-        let map;
-        function initMap() {
-          map = new google.maps.Map(document.getElementById('map'), {
-            center: {lat: 6.4474, lng: 3.3903},
-            zoom: 10
-          });
-          
-        }
+          function showPosition(position) {
+
+            let lat = position.coords.latitude;
+            let lng = position.coords.longitude;
+
+            let mapURL = `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=14&size=500x400&sensor=false&key=AIzaSyDDVxlDxBMFkM37SKcxczPnUUuSNr7qwp4`
+
+            map.innerHTML = `<img src = ${mapURL}>`;
+
+            fetch(`http://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&APPID=2c52f44abc37225f70c03a60124e1680`)
+              .then((resp) => resp.json())
+              .then(newData => {
+                console.log(newData);
+
+                weather.innerHTML = `Current weather: ${newData.weather[0].description}`
+
+                
+              })
+              .catch(error => console.log('Weather Error'))
+
+            fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyDDVxlDxBMFkM37SKcxczPnUUuSNr7qwp4`)
+              .then((resp) => resp.json())
+              .then( newData => {
+                log(newData.results[0].formatted_address);
+
+                city.innerHTML = `Location: ${newData.results[0].formatted_address}`
+              })
+              .catch(error => log("Address Error!!!"))
+
+            append(li, city);
+            append(li, weather);
+            append(ul, li);
+
+          }
+
+
+        window.addEventListener('load', getLocation);
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDVxlDxBMFkM37SKcxczPnUUuSNr7qwp4&callback=initMap"
-    async defer></script>
   </body>
 </html>
