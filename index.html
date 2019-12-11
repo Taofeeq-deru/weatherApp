@@ -54,9 +54,10 @@
           text-align: center;
         }
 
-        img {
-          max-width: 100%;
-        }
+        /* img {
+          width: 300px;
+          height: 300px;
+        } */
         
         @media screen and (min-width: 48em) {
           #map {
@@ -117,7 +118,7 @@
             let lat = position.coords.latitude;
             let lng = position.coords.longitude;
 
-            let mapURL = `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=14&size=500x400&sensor=false&key=AIzaSyDDVxlDxBMFkM37SKcxczPnUUuSNr7qwp4`
+            let mapURL = `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=14&size=300x300&sensor=false&key=AIzaSyDDVxlDxBMFkM37SKcxczPnUUuSNr7qwp4`
 
             map.innerHTML = `<img src = ${mapURL}>`;
 
@@ -126,7 +127,7 @@
               .then(newData => {
                 console.log(newData);
 
-                weather.innerHTML = `Current weather: ${newData.weather[0].description}`
+                weather.innerHTML = `Current weather: <b>${newData.weather[0].description}</b>`
 
                 
               })
@@ -137,7 +138,7 @@
               .then( newData => {
                 log(newData.results[0].formatted_address);
 
-                city.innerHTML = `Location: ${newData.results[0].formatted_address}`
+                city.innerHTML = `Location: <b>${newData.results[0].formatted_address}</b>`
               })
               .catch(error => log("Address Error!!!"))
 
