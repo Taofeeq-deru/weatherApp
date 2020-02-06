@@ -65,7 +65,7 @@
 
       function showWeather(city) {
         fetch(
-          `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&APPID=2c52f44abc37225f70c03a60124e1680`
+          `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&APPID=2c52f44abc37225f70c03a60124e1680`
         )
           .then(respo => respo.json())
           .then(cityData => {
@@ -90,7 +90,7 @@
                           <span class="description">${cityData.weather[0].description}</span>
                           </p>`;
 
-                let imgUrl = `http://openweathermap.org/img/w/${cityData.weather[0].icon}.png`;
+                let imgUrl = `https://openweathermap.org/img/w/${cityData.weather[0].icon}.png`;
 
                 document.querySelector(
                   "#searchedIcon"
@@ -119,7 +119,7 @@
                         <span class="description">${cityData.weather[0].description}</span>
                         </p>`;
 
-              let imgUrl = `http://openweathermap.org/img/w/${cityData.weather[0].icon}.png`;
+              let imgUrl = `https://openweathermap.org/img/w/${cityData.weather[0].icon}.png`;
 
               document.querySelector(
                 "#ownIcon"
