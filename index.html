@@ -1,150 +1,206 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>Weather App</title>
-    <meta name="viewport" content="initial-scale=1.0">
-    <meta charset="utf-8">
-    <style>
-      /* Always set the map height explicitly to define the size of the div
-       * element that contains the map. */
-      /* #map {
-        height: 100%;
-      } */
-      /* Optional: Makes the sample page fill the window. */
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-        body {
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-flow: column nowrap;
-            /* justify-content: center; */
-            align-items: center;
-            background: #eeeeee;
-            color: #555555;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-        }
-        ul {
-            list-style: none;
-            display: flex;
-            flex-flow: row wrap;
-            /*justify-content: center;*/
-            justify-content: center;
-        }
-        ul li {
-            display: flex;
-            flex-flow: column nowrap;
-            margin: 1.5em;
-            text-align: center;
-            font-size: 1.2em;
-            text-transform: capitalize;
-        }
-
-        i {
-          font-style: italic;
-          font-weight: bold;
-        }
-
-        #map {
-          height: 60%;
-          width: 100%;
-          text-align: center;
-        }
-        
-        @media screen and (min-width: 48em) {
-          #map {
-            max-width: 48em;
-          }
-        }
-
-    </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="style/style.css" />
+    <link rel="stylesheet" href="style/responsive.css" />
+    <!-- <script src="https://kit.fontawesome.com/f958ba3980.js" crossorigin="anonymous"></script> -->
+    <title>Weather</title>
   </head>
   <body>
-    <h1>Weather App</h1>
-    <div id="map"></div>
-    <ul id="location"></ul>
+    <div id="container">
+      <div id="header">
+        <h1>What's the weather like?</h1>
+      </div>
+      <div id="form">
+        <form action="" method="" id="cityForm">
+          <div>
+            <input
+              type="text"
+              name="city"
+              id="cityInput"
+              placeholder="Enter City Name"
+            />
+            <button type="submit" id="submitBtn">See Weather</button>
+          </div>
+          <div id="notification">
+            <!-- <p></p> -->
+          </div>
+        </form>
+      </div>
+      <div id="box">
+        <div id="city" class="">
+          <div id="ownIcon" class="weatherIcon">
+            <!-- <img src="" alt="weather icon" id="cityIcon" /> -->
+          </div>
+          <div id="yourCityType" class="cityType"></div>
+          <div id="ownCityWeather" class="cityWeather"></div>
+        </div>
+        <div id="search" class="">
+          <div id="searchedIcon" class="weatherIcon">
+            <!-- <img src="" alt="weather icon" id="searchedIcon" /> -->
+          </div>
+          <div id="searchedCityType" class="cityType"></div>
+          <div id="cityWeather" class="cityWeather"></div>
+        </div>
+      </div>
+    </div>
+
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.js"
+      integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+      crossorigin="anonymous"
+    ></script>
 
     <script>
+      document.querySelector("#ownCityWeather").innerHTML =
+        sessionStorage.getItem("ownCityWeather") || ``;
 
-        function createNode(element) {
-            return document.createElement(element); //create the type of element you pass in the parameters
-        }
+      document.querySelector("#ownIcon").innerHTML =
+        sessionStorage.getItem("ownIcon") || "";
 
-        function append(parent, el) {
-          return parent.appendChild(el); //append the second parameter (element) to the first one (parent)
-        }
+      console.log(document.querySelector("#ownIcon").innerHTML);
 
-        function id(idName) {
-            return document.getElementById(idName); //get an element by it's id
-        }
+      function showWeather(city) {
+        fetch(
+          `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&APPID=2c52f44abc37225f70c03a60124e1680`
+        )
+          .then(respo => respo.json())
+          .then(cityData => {
+            if (sessionStorage.getItem("ownCityWeather")) {
+              console.log("city searched for");
+              console.log(cityData);
+              if (cityData.cod == 200) {
+                document
+                  .querySelector("#notification")
+                  .classList.add("success");
+                document.querySelector(
+                  "#notification"
+                ).innerHTML = `<p>City found!</p>`;
+                document.querySelector("#search").classList.add("city");
+                document.querySelector(
+                  "#searchedCityType"
+                ).innerHTML = `Searched City's Weather`;
+                document.querySelector("#cityWeather").innerHTML = `<p>
+                          <span class="cityName">${city}</span> <br />
+                          <span class="temperature">${cityData.main.temp}°C</span>
+                          <br />
+                          <span class="description">${cityData.weather[0].description}</span>
+                          </p>`;
 
-        function select(query) {
-            return document.querySelector(query); //to select a query
-        }
+                let imgUrl = `http://openweathermap.org/img/w/${cityData.weather[0].icon}.png`;
 
-        function selectAll(queries) {
-            return document.querySelectorAll(queries); //to select all queries
-        }
+                document.querySelector(
+                  "#searchedIcon"
+                ).innerHTML = `<img src="" alt="weather icon" id="citySearched" />`;
 
-        function log(codes) {
-            return console.log(codes); //console log a code
-        }
-
-      const ul = select('#location');
-      const map = id('map');
-
-          let li = createNode('li'),
-              weather = createNode('span'),
-              city = createNode('span')
-
-          function getLocation() {
-            if (navigator.geolocation) {
-              navigator.geolocation.getCurrentPosition(showPosition);
+                document
+                  .querySelector("#citySearched")
+                  .setAttribute("src", imgUrl);
+              } else {
+                document.querySelector("#notification").classList.add("error");
+                document.querySelector(
+                  "#notification"
+                ).innerHTML = `<p>City not found!</p>`;
+              }
             } else {
-              span.innerHTML = `<h1>Geolocation is not supported by this browser</h1>`
+              //document.querySelector("#city").classList.remove("lds-facebook");
+              document.querySelector("#city").classList.add("city");
+              document.querySelector("#city").classList.remove("error");
+              document.querySelector(
+                "#yourCityType"
+              ).innerHTML = `Your City's Weather`;
+              document.querySelector("#ownCityWeather").innerHTML = `<p>
+                        <span class="cityName">${city}</span> <br />
+                        <span class="temperature">${cityData.main.temp}°C</span>
+                        <br />
+                        <span class="description">${cityData.weather[0].description}</span>
+                        </p>`;
+
+              let imgUrl = `http://openweathermap.org/img/w/${cityData.weather[0].icon}.png`;
+
+              document.querySelector(
+                "#ownIcon"
+              ).innerHTML = `<img src="" alt="weather icon" id="cityIcon" />`;
+
+              document.querySelector("#cityIcon").setAttribute("src", imgUrl);
+
+              sessionStorage.setItem(
+                "ownCityWeather",
+                document.querySelector("#ownCityWeather").innerHTML
+              );
+              sessionStorage.setItem(
+                "ownIcon",
+                document.querySelector("#ownIcon").innerHTML
+              );
+              console.log(document.querySelector("#ownIcon").innerHTML);
             }
-          }
+          });
+      }
 
-          function showPosition(position) {
+      function handleCitySearch(e) {
+        e.preventDefault();
+        console.log("Form Submitted");
+        let searchedCity = document.querySelector("#cityInput").value;
+        showWeather(searchedCity);
+        console.log(searchedCity);
+      }
 
-            let lat = position.coords.latitude;
-            let lng = position.coords.longitude;
+      function getLocation() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+          document.querySelector("#city").classList.add("city", "error");
+          document.querySelector(
+            "#cityWeather"
+          ).innerHTML = `<p class="text-white">Geolocation not supported by browser.<br>Please enter your city to see it's weather in "Searched City's Weather"</p>`;
+        }
+      }
 
-            let mapURL = `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=14&size=500x400&sensor=false&key=AIzaSyDDVxlDxBMFkM37SKcxczPnUUuSNr7qwp4`
+      function showPosition(position) {
+        let lat = position.coords.latitude;
+        let lng = position.coords.longitude;
 
-            map.innerHTML = `<img src = ${mapURL}>`;
+        fetch(
+          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyDDVxlDxBMFkM37SKcxczPnUUuSNr7qwp4`
+        )
+          .then(resp => resp.json())
+          .then(data => {
+            let ownCity = "";
+            const newData = data.results[0].address_components;
+            //console.log(newData);
+            newData.forEach(showCity);
+            console.log(typeof lat);
+            console.log(ownCity);
+            //theCity.push(ownCity);
+            showWeather(ownCity);
 
-            fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&APPID=2c52f44abc37225f70c03a60124e1680`)
-              .then((resp) => resp.json())
-              .then(newData => {
-                console.log(newData);
+            function showCity(value, index, array) {
+              if (value.types[0] == "administrative_area_level_1") {
+                ownCity = ownCity + value.long_name;
+              }
+            }
+          })
+          .catch(error => {
+            document.querySelector("#city").classList.add("city", "error");
+            document.querySelector(
+              "#ownCityWeather"
+            ).innerHTML = `<p class="text-white">Error!<br>Can't load address<br>Please enter city name to load weather</p>`;
+          });
+      }
 
-                weather.innerHTML = `Current weather: ${newData.weather[0].description}`
+      document
+        .querySelector("#cityForm")
+        .addEventListener("submit", handleCitySearch);
 
-                
-              })
-              .catch(error => console.log('Weather Error'))
-
-            fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyDDVxlDxBMFkM37SKcxczPnUUuSNr7qwp4`)
-              .then((resp) => resp.json())
-              .then( newData => {
-                log(newData.results[0].formatted_address);
-
-                city.innerHTML = `Location: ${newData.results[0].formatted_address}`
-              })
-              .catch(error => log("Address Error!!!"))
-
-            append(li, city);
-            append(li, weather);
-            append(ul, li);
-
-          }
-
-
-        window.addEventListener('load', getLocation);
+      if (sessionStorage.getItem("ownCityWeather")) {
+        document.querySelector("#city").classList.add("city");
+      } else {
+        //document.querySelector("#city").classList.add("lds-facebook");
+        getLocation();
+      }
     </script>
   </body>
 </html>
