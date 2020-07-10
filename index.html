@@ -54,7 +54,7 @@
       crossorigin="anonymous"
     ></script>
 
-    <script src="api.js"></script>
+    <script src="config.js"></script>
 
     <script>
       const theCity = [];
@@ -73,7 +73,7 @@
       function showWeather(city) {
         //fetch weather
         fetch(
-          `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&APPID=${openWeatherApi}`
+          `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&APPID=${config.openWeatherApi}`
         )
           .then((respo) => respo.json())
           .then((cityData) => {
@@ -197,13 +197,8 @@
           let city = theCity[0];
           showWeather(city);
         } else {
-          //console.log(theCity);
           if (theCity[0] != checkCity) {
-            //console.log("new city");
-            if (
-              checkCity ==
-              document.querySelector("#own").innerHTML.toLowerCase()
-            ) {
+            if (checkCity == sessionStorage.getItem("cityName").toLowerCase()) {
               document.querySelector("#notification").classList.add("neutral");
               document.querySelector(
                 "#notification"
@@ -214,6 +209,7 @@
               showWeather(city);
             }
           } else if (theCity[0] == checkCity) {
+            //console.log("showing already");
             //first check if city is saved in sessionStorage or displaying already
             if (sessionStorage.getItem("ownCityWeather")) {
               document.querySelector("#notification").classList.add("neutral");
@@ -240,10 +236,10 @@
         ).innerHTML = `<div class="lds-facebook"><div></div><div></div><div></div></div>`;
         //console.log("Form Submitted");
         let searchedCity = document.querySelector("#cityInput").value;
-        searchedCity.toLowerCase();
+        let citySearchedFor = searchedCity.toLowerCase();
         //console.log(document.querySelector("#own").innerHTML);
         //console.log(theCity);
-        checkCity(searchedCity);
+        checkCity(citySearchedFor);
         //console.log(searchedCity);
       }
 
@@ -268,7 +264,7 @@
         //console.log(lat, lng);
 
         fetch(
-          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${googleApi}`
+          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${config.googleApi}`
         )
           .then((resp) => resp.json())
           .then((data) => {
