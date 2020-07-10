@@ -54,8 +54,6 @@
       crossorigin="anonymous"
     ></script>
 
-    <script src="config.js"></script>
-
     <script>
       const theCity = [];
 
@@ -73,7 +71,7 @@
       function showWeather(city) {
         //fetch weather
         fetch(
-          `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&APPID=${config.openWeatherApi}`
+          `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&APPID=2c52f44abc37225f70c03a60124e1680`
         )
           .then((respo) => respo.json())
           .then((cityData) => {
@@ -264,7 +262,7 @@
         //console.log(lat, lng);
 
         fetch(
-          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${config.googleApi}`
+          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyDDVxlDxBMFkM37SKcxczPnUUuSNr7qwp4`
         )
           .then((resp) => resp.json())
           .then((data) => {
