@@ -54,6 +54,8 @@
       crossorigin="anonymous"
     ></script>
 
+    <script src="api.js"></script>
+
     <script>
       const theCity = [];
 
@@ -71,7 +73,7 @@
       function showWeather(city) {
         //fetch weather
         fetch(
-          `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&APPID=2c52f44abc37225f70c03a60124e1680`
+          `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&APPID=${openWeatherApi}`
         )
           .then((respo) => respo.json())
           .then((cityData) => {
@@ -159,6 +161,10 @@
                 "cityType",
                 document.querySelector("#yourCityType").innerHTML
               );
+              sessionStorage.setItem(
+                "cityName",
+                document.querySelector("#own").innerHTML
+              );
               //console.log(document.querySelector("#ownIcon").innerHTML);
             }
           })
@@ -186,14 +192,14 @@
       function checkCity(checkCity) {
         //console.log("checked city");
         if (theCity.length == 0) {
-          console.log("empty");
+          //console.log("empty");
           theCity.push(checkCity);
           let city = theCity[0];
           showWeather(city);
         } else {
-          console.log(theCity);
+          //console.log(theCity);
           if (theCity[0] != checkCity) {
-            console.log("new city");
+            //console.log("new city");
             if (
               checkCity ==
               document.querySelector("#own").innerHTML.toLowerCase()
@@ -259,10 +265,10 @@
         //get lng and lat
         let lat = position.coords.latitude;
         let lng = position.coords.longitude;
-        console.log(lat, lng);
+        //console.log(lat, lng);
 
         fetch(
-          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=AIzaSyDDVxlDxBMFkM37SKcxczPnUUuSNr7qwp4`
+          `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${googleApi}`
         )
           .then((resp) => resp.json())
           .then((data) => {
@@ -305,7 +311,7 @@
       //to load getlocation only when weather data isn't saved in sessionStorage.
       if (sessionStorage.getItem("ownCityWeather")) {
         document.querySelector("#city").classList.add("city"); //city card
-        theCity.push(document.querySelector("#own").innerHTML);
+        theCity.push(sessionStorage.getItem("cityName"));
         //console.log(theCity);
         //console.log(document.querySelector("#own").innerHTML);
       } else {
