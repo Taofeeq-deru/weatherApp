@@ -185,34 +185,40 @@
       //check if city is your city
       function checkCity(checkCity) {
         //console.log("checked city");
-        if (theCity == []) {
-          //console.log("empty");
+        if (theCity.length == 0) {
+          console.log("empty");
           theCity.push(checkCity);
           let city = theCity[0];
           showWeather(city);
-        } else if (theCity[0] != checkCity) {
-          //console.log("new city");
-          if (checkCity != document.querySelector("#own").innerHTML) {
-            theCity.splice(0, 1, checkCity);
-            let city = theCity[0];
-            showWeather(city);
-          } else {
-            document.querySelector("#notification").classList.add("neutral");
-            document.querySelector(
-              "#notification"
-            ).innerHTML = `<p>City's weather already showing🤨</p>`;
-          }
-        } else if (theCity[0] == checkCity) {
-          //first check if city is saved in sessionStorage or displaying already
-          if (sessionStorage.getItem("ownCityWeather")) {
-            document.querySelector("#notification").classList.add("neutral");
-            document.querySelector(
-              "#notification"
-            ).innerHTML = `<p>City's weather already showing🤨</p>`;
-          } else {
-            theCity.splice(0, 1, checkCity);
-            let city = theCity[0];
-            showWeather(city);
+        } else {
+          console.log(theCity);
+          if (theCity[0] != checkCity) {
+            console.log("new city");
+            if (
+              checkCity ==
+              document.querySelector("#own").innerHTML.toLowerCase()
+            ) {
+              document.querySelector("#notification").classList.add("neutral");
+              document.querySelector(
+                "#notification"
+              ).innerHTML = `<p>City's weather already showing🤨</p>`;
+            } else {
+              theCity.splice(0, 1, checkCity);
+              let city = theCity[0];
+              showWeather(city);
+            }
+          } else if (theCity[0] == checkCity) {
+            //first check if city is saved in sessionStorage or displaying already
+            if (sessionStorage.getItem("ownCityWeather")) {
+              document.querySelector("#notification").classList.add("neutral");
+              document.querySelector(
+                "#notification"
+              ).innerHTML = `<p>City's weather already showing🤨</p>`;
+            } else {
+              theCity.splice(0, 1, checkCity);
+              let city = theCity[0];
+              showWeather(city);
+            }
           }
         }
       }
@@ -230,7 +236,7 @@
         let searchedCity = document.querySelector("#cityInput").value;
         searchedCity.toLowerCase();
         //console.log(document.querySelector("#own").innerHTML);
-        console.log(theCity);
+        //console.log(theCity);
         checkCity(searchedCity);
         //console.log(searchedCity);
       }
@@ -277,8 +283,8 @@
                 ownCity = ownCity + value.long_name;
               }
             }
-          });
-        /*** .catch((error) => {
+          })
+          .catch((error) => {
             //if address can't be gotten from googleAPI
             document.querySelector("#city").classList.remove("lds-facebook");
             document.querySelector("#box").classList.remove("center");
@@ -286,7 +292,9 @@
             document.querySelector(
               "#ownCityWeather"
             ).innerHTML = `<p class="text-white">Error!🚨<br>Can't load address<br>Please refresh and enter city name to load weather</p>`;
-          });***/
+
+            console.log(error);
+          });
       }
 
       //on submission of form
